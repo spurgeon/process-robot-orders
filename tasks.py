@@ -83,9 +83,9 @@ def clear_files():
     """Clears output directories"""
     fs = FileSystem()
     if fs.does_directory_exist(output_receipts_dir):
-        fs.empty_directory(output_receipts_dir)
+        fs.remove_directory(output_receipts_dir, True)
     if fs.does_directory_exist(output_screenshots_dir):
-        fs.empty_directory(output_screenshots_dir)
+        fs.remove_directory(output_screenshots_dir, True)
     fs.remove_file(output_zip_archive)
 
 
@@ -95,10 +95,13 @@ def get_orders():
     http = HTTP()
     http.download(url=csv_orders_url,
                   target_file=local_csv_file, overwrite=True)
-
-    # Read the CSV file into a table
     tables = Tables()
-    return tables.read_table_from_csv(local_csv_file)
+    orders = tables.read_table_from_csv(local_csv_file)
+    # No need to keep CSV file
+    fs = FileSystem()
+    fs.remove_file(local_csv_file)
+    # Return the table
+    return orders
 
 
 def close_annoying_modal():
